@@ -499,4 +499,5 @@
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.426115, 37.770205]},"properties": {"name": "The Mint Karaoke Lounge", "locality":"San Francisco"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.059967, 42.357868]},"properties": {"name": "Parker's Restaurant - Omni Parker House", "locality":"Boston"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.396779, 37.78582]},"properties": {"name": "Starbucks", "locality":"San Francisco"}}
+
 ]}

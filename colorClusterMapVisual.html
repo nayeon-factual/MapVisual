@@ -92,41 +92,40 @@
                     
                     // Define Behaviors when Mouse Hovers over a Cluster
                     markers.on('clustermouseover', function (a) {
+                        
                         //Cluster Boundary Polygon Object
                         var boundPolygon = L.polygon(a.layer.getConvexHull());
-                        console.log(boundPolygon);
+                        //console.log(boundPolygon);
                         //Area of Cluster Boundary in km^2
                         var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
                         var clusterDensity = boundArea/a.layer.getChildCount();
                         a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker');
                         a.layer.openPopup();
                         
+                        
                         //Calculating LatLng of the Centroid of the Cluster
                         var latXTotal = 0;
                         var latYTotal = 0;
                         var lonDegreesTotal = 0;
-
-                        var currentLatLong;
-                        for (var i = 0; currentLatLong = boundPolygon._latlngs[i]; i++) { 
-                            var latDegrees = currentLatLong.lat();
-                            console.log(latDegrees);
-                            var lonDegrees = currentLatLong.lng();
-
-                            var latRadians = Math.PI * latDegrees / 180;
-                            console.log(latRadians);
-                            latXTotal += Math.cos(latRadians);
-                            latYTotal += Math.sin(latRadians);
-
-                            lonDegreesTotal += lonDegrees;
+                        var currentLatLng;
+                        
+                        for (c = 0; c < a.layer.getAllChildMarkers().length; c++) {
+                            currentLatLng = a.layer.getAllChildMarkers()[c]._latlng;
+                            var latDeg = currentLatLng.lat;
+                            var lonDeg = currentLatLng.lng;
+                            var latRad = Math.PI * latDeg / 180;
+                            latXTotal += Math.cos(latRad);
+                            latYTotal += Math.sin(latRad);
+                            lonDegreesTotal += lonDeg;
                         }
+                        var finalLatRad = Math.atan2(latYTotal, latXTotal);
 
-                        var finalLatRadians = Math.atan2(latYTotal, latXTotal);
-                        console.log(finalLatRadians);
-
-                        var finalLatDegrees = finalLatRadians * 180 / Math.PI;
-                        var finalLonDegrees = lonDegreesTotal / boundPolygon._latlngs.length;
-                        console.log(finalLonDegrees);
+                        var finalLatDeg = finalLatRad * 180 / Math.PI;
+                        var finalLonDeg = lonDegreesTotal / a.layer.getAllChildMarkers().length;
+                        console.log(finalLatDeg+','+finalLonDeg);
                         });
+                
+                
                 
                         //Populate mapDataTable when Cluster is Clicked
                         markers.on('clusterclick', function (a) {
