@@ -4,34 +4,83 @@ body { margin:0; padding:0; background-color: grey; }
     font-size: 14px;
 }
 
+#mapDataTable th{
+    font-size: 16px;
+}
+
 #dataTable {
     position:absolute; 
     top:0; 
     bottom:0;
     left: 0;
-    width: 30%;
+    width: 35%;
     height: 100%;
     background-color: #fff;
     overflow: auto;
+    padding: 10px 18px;
 }
 
 #map { 
     position:absolute; 
     top:0; 
-    bottom:25%;
-    left: 30%;
-    width: 70%;
-    height: 75%;
+    bottom:20%;
+    left: 35%;
+    width: 65%;
+    height: 80%;
 }
 
 #messages {
     position:absolute; 
-    top:75%; 
+    top:80%; 
     bottom:0;
-    left: 30%;
-    width: 70%;
+    left: 35%;
+    width: 65%;
     background-color: #f2f2f2;
-    height: 25%;
+    height: 20%;
     overflow: auto;
+    padding: 10px;
 }
 
+
+/*Default Settings */
+
+.marker-cluster-small {
+	background-color: rgba(181, 226, 140, 0.6);
+	}
+.marker-cluster-small div {
+	background-color: rgba(110, 204, 57, 0.6);
+	}
+
+.marker-cluster-medium {
+	background-color: rgba(241, 211, 87, 0.6);
+	}
+.marker-cluster-medium div {
+	background-color: rgba(240, 194, 12, 0.6);
+	}
+
+.marker-cluster-large {
+	background-color: rgba(253, 156, 115, 0.6);
+	}
+.marker-cluster-large div {
+	background-color: rgba(241, 128, 23, 0.6);
+	}
+
+.marker-cluster {
+	background-clip: padding-box;
+	border-radius: 20px;
+	}
+
+.marker-cluster div {
+	width: 30px;
+	height: 30px;
+	margin-left: 5px;
+	margin-top: 5px;
+
+	text-align: center;
+	border-radius: 15px;
+	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	}
+
+.marker-cluster span {
+	line-height: 30px;
+	}
