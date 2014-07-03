@@ -1,0 +1,170 @@
+<html lang="en">
+    <head>
+        <title> Color Geocode Visual </title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!--Mapbox-->
+        <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+        <!--style sheet-->
+        <link href='colorClusterMapVisual.css' rel='stylesheet' type='text/css'/>
+        <!--bootstrap-->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <!--jquery-->
+        <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+        <!--Slider-->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    </head>
+    
+    <body>
+        <!--MapBox MarkerCluster Plugin-->
+        <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet'/>
+        <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet'/>
+        
+        <!--MapBox Draw & Geodesy Plugin-->
+        <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.css' rel='stylesheet' />
+        <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.js'></script>
+        <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
+        
+        
+        <div id = "map"></div>
+        <div id = "dataTable">
+            <table id = "mapDataTable" class = "table table-hover table-condensed">
+                <tr>
+                    <th> Name </th>
+                    <th> Locality </th>
+                    <th> Latitude </th>
+                    <th> Longitude </th>
+                </tr>
+            </table>
+        </div>
+        <div id = "messages">
+            <table id = "msgTable" class = "table table-hover table-condensed">
+                    <tr>
+                        <th> img </th>
+                        <th> Message </th>
+                    </tr>
+                </table>
+        </div>
+
+        <script>
+            //LOAD MAP
+            var map = L.mapbox.map('map', 'nayeon-factual.ik2lag96')
+                .setView([38, -102.0], 9);
+            
+            //LOAD POINTS
+            var featureLayer = L.mapbox.featureLayer()
+                .loadURL('map.geojson')
+            
+            featureLayer.on('ready', function(layer) {
+                map.fitBounds(featureLayer.getBounds());
+                
+                //Initially populate mapDataTable with first 100 data points
+                // featureLayer._geojson returns entire featureCollection, iterate through. 
+                var featCol = featureLayer._geojson;
+                for (i = 0; i < 100; i++) {
+                    var name = featCol.features[i].properties.name;
+                    var loc = featCol.features[i].properties.locality;
+                    var lat = featCol.features[i].geometry.coordinates[0];
+                    var lng = featCol.features[i].geometry.coordinates[1];
+                    $("#mapDataTable").append("<tr><td>" + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
+                }
+                
+                
+                var markers = new L.MarkerClusterGroup();
+                    //Populate mapDataTable when Marker is Clicked
+                    markers.on('click', function (a) {
+                        //a.layer is [object object] = represents marker
+                        var markerObject = a.layer.toGeoJSON();
+                        var clickedName = markerObject.properties.name;
+                        var clickedLoc = markerObject.properties.locality;
+                        var clickedLat = markerObject.geometry.coordinates[0];
+                        var clickedLng = markerObject.geometry.coordinates[1];
+                        $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
+                        $("#mapDataTable").append("<tr><td>" + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                    });
+                
+                    //Populate mapDataTable when Cluster is Clicked
+                    markers.on('clustermouseover', function (a) {
+                        //Cluster Boundary Polygon Object
+                        var boundPolygon = L.polygon(a.layer.getConvexHull());
+                        //Area of Cluster Boundary in km^2
+                        var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
+                        var clusterDensity = boundArea/a.layer.getChildCount();
+                        a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker');
+                        a.layer.openPopup();
+                        
+                        });
+
+                        markers.on('clusterclick', function (a) {
+                           
+                        //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
+                        //console.log('cluster ' + a.layer.getAllChildMarkers().length);
+                        // ** TODO ** only populate table with top 100 if childCount > 100 
+                        $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
+                        for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+                            var clusterClickName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
+                            var clusterClickLoc = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.locality;
+                            var clusterClickLat = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0];
+                            var clusterClickLng = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1];
+                            $("#mapDataTable").append("<tr><td>"+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
+                        }
+                    });
+                
+                this.eachLayer(function(marker) {
+                    markers.addLayer(marker);
+                });
+                map.addLayer(markers);
+            });
+            
+
+            
+            /*featureLayer.on('ready', function(layer) {
+                map.fitBounds(featureLayer.getBounds());
+                
+                var markers = new L.MarkerClusterGroup( {
+                    maxClusterRadius: 30,
+//                    polygonOptions: {
+//                        color: "#fff" - stroke color
+//                          opacity: 
+//                            fillColor/fillOpacity
+//                            className
+//                    },
+//                    iconCreateFunction: 
+//                        function (cluster) {
+//                            return new L.DivIcon({
+//                                className: 'prism',
+//                                html: cluster.getChildCount(),
+//                                iconSize: [16, 16]
+//                            });
+//                        }
+                });
+                
+                this.eachLayer(function(marker) {
+                    markers.addLayer(marker);
+//                    console.log(marker.toGeoJSON().properties.name);
+//                    console.log(marker.toGeoJSON().geometry.coordinates);
+                    markers.on('click', function (a) {
+                        //a.layer is [object object]
+                        console.log('marker ' + a.layer);
+                        console.log(a.layer.marker.toGeoJSON().properties.name);
+                    });
+
+                    markers.on('clusterclick', function (a) {
+                        //a.layer.getAllChildMarkers().length is childcount
+                        console.log('cluster ' + a.layer.getAllChildMarkers().length);
+                        console.log(a.layer.toGeoJSON().properties.name);
+
+                    });
+                });
+                map.addLayer(markers);
+            });
+            */
+
+            
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,29 @@
+* {
+  margin:0;
+  padding:0;
+}
+
+body {
+  background-image: url(http://subtlepatterns.com/patterns/black_lozenge.png);
+}
+
+#map {
+  background-color: #222;
+  margin: 0 auto;
+  height: 600px;
+  width: 600px;
+  transform-style: preserve-3d;
+  box-shadow:
+    20px 20px 100px 10px rgba(0,0,0,0.3),
+    50px 50px 200px 10px rgba(0,0,0,0.2);	
+  
+ -webkit-transform:
+    translateX(50px)
+    translateY(-16px)
+    translateZ(-10px)
+    rotateX(0deg)
+    rotateY(00deg)
+    rotateZ(0deg);
+ transform-origin: 50% 50% 0;
+
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Create markers from HTML</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+
+
+<style>
+/*
+ * Unlike other icons, you can style `L.divIcon` with CSS.
+ * These styles make each marker a circle with a border and centered text.
+ */
+    
+    
+#map {
+  width: 300px;
+  height: 200px;
+  position: relative;
+  perspective: 1000px;
+}    
+    
+    
+.count-icon {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  background:#ff8888;
+  border:5px solid rgba(255,255,255,0.5);
+  color:#fff;
+  font-weight:bold;
+  text-align:center;
+  border-radius:50%;
+  line-height:30px;
+  }
+</style>
+    
+<div id='map'></div>
+<script>
+var map = L.mapbox.map('map', 'examples.map-i86nkdio')
+    .setView([0, 0], 2);
+
+// For 0 -> 9, create markers in a circle
+for (var i = 0; i < 10; i++) {
+    // Use a little math to position markers.
+    // Replace this with your own code.
+    L.marker([
+        Math.cos(i / 10 * 2 * Math.PI) * 40,
+        Math.sin(i / 10 * 2 * Math.PI) * 40
+    ], {
+        icon: L.divIcon({
+            // Specify a class name we can refer to in CSS.
+            className: 'count-icon',
+            // Define what HTML goes in each marker.
+            html: i,
+            // Set a markers width and height.
+            iconSize: [40, 40]
+        })
+    }).addTo(map);
+}
+</script>
+
+
+</body>
+</html>

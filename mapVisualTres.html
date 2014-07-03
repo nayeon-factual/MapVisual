@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset=utf-8 />
+    
+<title> Map Visual </title>
+
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />  
+
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+<link href='mapVisual.css' rel='stylesheet' type='text/css'/> 
+<script src="//code.jquery.com/jquery-1.11.1.js"></script>
+
+</head>
+ 
+<body>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+
+<div id='map'></div>
+    
+<script>
+
+//LOAD MAP
+var map = L.mapbox.map('map', 'nayeon-factual.ik2lag96')
+    .setView([38, -102.0], 9);
+ 
+//LOAD POINTS
+var featureLayer = L.mapbox.featureLayer()
+    .loadURL('map.geojson')
+    .on('ready', function(layer) {
+        map.fitBounds(featureLayer.getBounds());
+        //Clustering Points
+        var markers = new L.MarkerClusterGroup();
+        this.eachLayer(function(marker) {
+            markers.addLayer(marker);
+        });
+        map.addLayer(markers);
+    });
+    
+
+/*
+//Tilting Tools 
+    
+// Initial Values
+var boundsRotateX = {
+    max: 10,
+    min: -30
+},
+    boundsRotateZ = {
+    max: 20,
+    min: -20
+},
+    targetRotation = {
+    x: 0,
+    y: 0,
+    z: 0
+},
+    currentRotation = targetRotation;
+
+// interpolate
+function lerp(start, stop, t) {
+    return (stop - start) * t + start;
+}
+
+// re-maps a number from one range to another
+function reMap(value, fromLow, fromHigh, toLow, toHigh) {
+    var fromDiff = fromHigh - fromLow,
+        toDiff = toHigh - toLow,
+        ratio = toDiff / fromDiff;
+    return toLow + (value - fromLow) * ratio;
+}
+
+// main animation loop; interpolates to the value of targetRotation
+(function tick() {
+    currentRotation = {
+        x: lerp(currentRotation.x, targetRotation.x, 0.90),
+        y: lerp(currentRotation.y, targetRotation.y, 0.15),
+        z: lerp(currentRotation.z, targetRotation.z, 0.15)
+    };
+    // render rotation of the device
+    $("#map").css("-webkit-transform", "rotateX(" + currentRotation.x + "deg) rotateY(" + currentRotation.y + "deg) rotateZ(" + currentRotation.z + "deg)  translateX(0px) translateY(-50px) translateZ(-50px)");
+    requestAnimationFrame(tick);
+})();
+    
+// update the target rotation value when the user moves the mouse. y position controls x rotation, x position controls z rotation, currently not modifying the y rotation.
+$("html").on("mousemove", 
+             function (e) {
+    targetRotation = {
+        x: reMap(e.clientY, 0, $("html").height(), boundsRotateX.min, boundsRotateX.max) * -1.6,
+        y: 0,
+        z: reMap(e.clientX, 0, $("html").width(), boundsRotateZ.min, boundsRotateZ.max) * -1.8
+    };
+});*/
+
+
+</script>
+</body>
+</html>

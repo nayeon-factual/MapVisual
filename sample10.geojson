@@ -1,0 +1,23 @@
+{ "type": "FeatureCollection","features": [
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[-122.41035,37.788141]},"properties": {"name": "JW Marriott San Francisco Union Square"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.401051, 37.78566]},"properties": {"name": "W Hotel San Francisco"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.401712, 37.788269]},"properties": {"name": "Palace Hotel"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.410216, 37.78592]},"properties": {"name": "Hilton San Francisco Union Square"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.409422, 37.791833]},"properties": {"name": "Renaissance Stanford Court"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.404745, 37.781947]},"properties": {"name": "InterContinental San Francisco"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.46684, 37.769856]},"properties": {"name": "The Moss Room"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.407343, 37.789042]},"properties": {"name": "Reserve at Grandviews at the Grand Hyatt San Francisco"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.410291, 37.792293]},"properties": {"name": "Tonga Room"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -122.400963, 37.793973]},"properties": {"name": "Subway"}}
+
+]}
