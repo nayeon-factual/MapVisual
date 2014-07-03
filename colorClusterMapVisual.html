@@ -103,7 +103,7 @@
                         a.layer.openPopup();
                         
                         
-                        //Calculating LatLng of the Centroid of the Cluster
+                        // Calculating LatLng of the Centroid of the Cluster
                         var latXTotal = 0;
                         var latYTotal = 0;
                         var lonDegreesTotal = 0;
@@ -114,16 +114,41 @@
                             var latDeg = currentLatLng.lat;
                             var lonDeg = currentLatLng.lng;
                             var latRad = Math.PI * latDeg / 180;
+                            
                             latXTotal += Math.cos(latRad);
                             latYTotal += Math.sin(latRad);
                             lonDegreesTotal += lonDeg;
                         }
-                        var finalLatRad = Math.atan2(latYTotal, latXTotal);
+                        var centrLatRad = Math.atan2(latYTotal, latXTotal);
+                        //(finalLatDeg, finalLonDeg): Centroid Coordinates
+                        var centrLatDeg = centrLatRad * 180 / Math.PI;
+                        var centrLonDeg = lonDegreesTotal / a.layer.getAllChildMarkers().length;
+                        
+                        
+                        // Calculating Standard of Deviation for all Markers in Cluster
+                        var R = 6371; //earth's radius approx.
+                        var centrLonRad = Math.PI * centrLonDeg / 180;
+                        var distSum = 0;
+                        
+                        for (s = 0; s < a.layer.getAllChildMarkers().length; s++) {
+                            // Haversine Formula for Distance Between All Markers and Centroid
+                            var otherLat = a.layer.getAllChildMarkers()[s]._latlng.lat;
+                            var otherLon = a.layer.getAllChildMarkers()[s]._latlng.lng;
+                            
+                            var deltaLat = Math.PI * (otherLat - centrLatDeg) / 180; //deltaLat in Rad
+                            var deltaLng = Math.PI * (otherLon - centrLonDeg) / 180; //deltaLng in Rad
 
-                        var finalLatDeg = finalLatRad * 180 / Math.PI;
-                        var finalLonDeg = lonDegreesTotal / a.layer.getAllChildMarkers().length;
-                        console.log(finalLatDeg+','+finalLonDeg);
-                        });
+                            var step1 = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
+                                Math.cos(centrLatRad) * Math.cos(Math.PI *  otherLat/180) 
+                                * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+                            var step2 = 2*Math.atan2(Math.sqrt(step1), Math.sqrt(1-step1));
+
+                            var dist = R * step2
+                            distSum += dist;
+                            }
+                        var stDev = distSum/a.layer.getAllChildMarkers().length;
+                        console.log(stDev);
+                    });
                 
                 
                 
