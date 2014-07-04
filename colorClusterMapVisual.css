@@ -45,7 +45,7 @@ body { margin:0; padding:0; background-color: grey; }
 /*Default Settings */
 
 .marker-cluster-small {
-	background-color: rgba(181, 226, 140, 0.6);
+	background-color: hsla(100,30%, 50%, 1);
 	}
 .marker-cluster-small div {
 	background-color: rgba(110, 204, 57, 0.6);

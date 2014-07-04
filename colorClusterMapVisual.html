@@ -80,13 +80,17 @@
                     // ***TODO*** instead of using childcount to change color of cluster, use stDev. (sm,med,lg to zero_realred, low_red, med_green, high_blue stdev) and rather than set 3 pre-determined values of colors, fill the shade of the icon dynamically hsb(0-100,40-100%, 30-70)
 //                    iconCreateFunction: function(cluster) { 
 //                        var c = ' marker-cluster-';
-//                            if (childCount < 10) {
-//                                c += 'small';
-//                            } else if (childCount < 100) {
+                    
+                    
+//                            if (stDev < .4) {
+//                                c += 'low';
+//                            } else if (childCount < 1) {
 //                                c += 'medium';
 //                            } else {
-//                                c += 'large';
+//                                c += 'high';
 //                            }
+                    
+                    
 //                        return new L.DivIcon({ html: '<div><span>' + childCount + stDev '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40)})
 //                    }
                 });
@@ -181,14 +185,11 @@
                             $("#mapDataTable").append("<tr><td>"+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
                         }
                     });
-                
                 this.eachLayer(function(marker) {
                     markers.addLayer(marker);
                 });
                 map.addLayer(markers);
             });
-            
-
             
             /*featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
@@ -210,7 +211,6 @@
 //                            });
 //                        }
                 });
-                
                 this.eachLayer(function(marker) {
                     markers.addLayer(marker);
 //                    console.log(marker.toGeoJSON().properties.name);
@@ -220,18 +220,15 @@
                         console.log('marker ' + a.layer);
                         console.log(a.layer.marker.toGeoJSON().properties.name);
                     });
-
                     markers.on('clusterclick', function (a) {
                         //a.layer.getAllChildMarkers().length is childcount
                         console.log('cluster ' + a.layer.getAllChildMarkers().length);
                         console.log(a.layer.toGeoJSON().properties.name);
-
                     });
                 });
                 map.addLayer(markers);
             });
             */
-
             
         </script>
     </body>
