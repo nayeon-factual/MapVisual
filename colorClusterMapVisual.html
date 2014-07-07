@@ -97,6 +97,7 @@
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
                         var row = document.getElementById(a.layer.toGeoJSON().properties.name);
+                        console.log(a.layer.toGeoJSON().properties.name);
                             row.className = "active";
                     })
                             
@@ -114,9 +115,10 @@
                         var clickedLat = markerObject.geometry.coordinates[0];
                         var clickedLng = markerObject.geometry.coordinates[1];
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
-                        $("#mapDataTable").append("<tr><td>" + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                        $("#mapDataTable").append('<tr id="'+clickedName+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                         
                     });
+                
                 
                     // Define Behaviors when Mouse Hovers over a Cluster
                     markers.on('clustermouseover', function (a) {
@@ -179,7 +181,23 @@
                         // Popup Displays boundArea, clusterDensity, stDev upon hover
                         a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker <br /> standard of Dev: ' + stDev);
                         a.layer.openPopup();
-                    });
+                        
+                        // Highlight in DataTable when Mouse Hovers over a Cluster
+                        for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+                            var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
+                            console.log(clusterName);
+                            var row = document.getElementById(clusterName);
+                            row.className = "active";
+                        }
+                        
+                        });
+                        markers.on('clustermouseout', function (a) {
+                            for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+                            var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
+                            var row = document.getElementById(clusterName);
+                            row.className = " ";
+                        }
+                        });
                 
                 
                         //Populate mapDataTable when Cluster is Clicked
@@ -194,7 +212,7 @@
                             var clusterClickLoc = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.locality;
                             var clusterClickLat = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0];
                             var clusterClickLng = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1];
-                            $("#mapDataTable").append("<tr id='"+clusterClickName+"'><td>"+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
+                            $("#mapDataTable").append('<tr id="'+clusterClickName+'"><td>'+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
                         }
                     });
                 
