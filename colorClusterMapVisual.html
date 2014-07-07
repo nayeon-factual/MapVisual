@@ -61,7 +61,7 @@
             featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
                 
-                // Initially populate mapDataTable with first 100 data points
+                 // Initially populate mapDataTable with first 100 data points
                 // ***TODO*** set behavior for when there is initially < 100 data points
                 // featureLayer._geojson returns entire featureCollection, iterate through. 
                 var featCol = featureLayer._geojson;
@@ -72,8 +72,7 @@
                     var lng = featCol.features[i].geometry.coordinates[1];
                     $("#mapDataTable").append("<tr><td>" + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
                 }
-                
-                
+                                
                 var markers = new L.MarkerClusterGroup({
                     maxClusterRadius: 40,
                     // polygonOptions:{}, 
@@ -95,6 +94,17 @@
 //                    }
                 });
                 
+                    // Highlight in DataTable when Mouse Hovers over a Marker
+                    markers.on('mouseover', function (a) {
+                        var row = document.getElementById(a.layer.toGeoJSON().properties.name);
+                            row.className = "active";
+                    })
+                            
+                    markers.on('mouseout', function (a) {
+                        var row = document.getElementById(a.layer.toGeoJSON().properties.name);
+                            row.className = " ";
+                    })        
+                    
                     // Populate mapDataTable when a Marker is Clicked
                     markers.on('click', function (a) {
                         //a.layer is [object object] = represents marker
@@ -105,11 +115,12 @@
                         var clickedLng = markerObject.geometry.coordinates[1];
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
                         $("#mapDataTable").append("<tr><td>" + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                        
                     });
                 
-                    
                     // Define Behaviors when Mouse Hovers over a Cluster
                     markers.on('clustermouseover', function (a) {
+                        var markerObject = a.layer.toGeoJSON();
                         
                         //Cluster Boundary Polygon Object
                         var boundPolygon = L.polygon(a.layer.getConvexHull());
@@ -134,6 +145,7 @@
                             latYTotal += Math.sin(latRad);
                             lonDegreesTotal += lonDeg;
                         }
+                        
                         var centrLatRad = Math.atan2(latYTotal, latXTotal);
                         //Centroid Coordinates: (centrLatDeg, centrLonDeg)
                         var centrLatDeg = centrLatRad * 180 / Math.PI;
@@ -182,11 +194,14 @@
                             var clusterClickLoc = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.locality;
                             var clusterClickLat = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0];
                             var clusterClickLng = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1];
-                            $("#mapDataTable").append("<tr><td>"+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
+                            $("#mapDataTable").append("<tr id='"+clusterClickName+"'><td>"+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
                         }
                     });
+                
                 this.eachLayer(function(marker) {
                     markers.addLayer(marker);
+                    //console.log('markerlatlng'+marker.getLatLng());
+                    //console.log('fitBounds '+markers.addLayer(marker));
                 });
                 map.addLayer(markers);
             });
@@ -211,25 +226,7 @@
 //                            });
 //                        }
                 });
-                this.eachLayer(function(marker) {
-                    markers.addLayer(marker);
-//                    console.log(marker.toGeoJSON().properties.name);
-//                    console.log(marker.toGeoJSON().geometry.coordinates);
-                    markers.on('click', function (a) {
-                        //a.layer is [object object]
-                        console.log('marker ' + a.layer);
-                        console.log(a.layer.marker.toGeoJSON().properties.name);
-                    });
-                    markers.on('clusterclick', function (a) {
-                        //a.layer.getAllChildMarkers().length is childcount
-                        console.log('cluster ' + a.layer.getAllChildMarkers().length);
-                        console.log(a.layer.toGeoJSON().properties.name);
-                    });
-                });
-                map.addLayer(markers);
-            });
             */
-            
         </script>
     </body>
 
