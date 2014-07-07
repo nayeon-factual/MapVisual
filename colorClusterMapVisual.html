@@ -75,23 +75,23 @@
                                 
                 var markers = new L.MarkerClusterGroup({
                     maxClusterRadius: 40,
-                    // polygonOptions:{}, 
-                    // ***TODO*** instead of using childcount to change color of cluster, use stDev. (sm,med,lg to zero_realred, low_red, med_green, high_blue stdev) and rather than set 3 pre-determined values of colors, fill the shade of the icon dynamically hsb(0-100,40-100%, 30-70)
-//                    iconCreateFunction: function(cluster) { 
-//                        var c = ' marker-cluster-';
-                    
-                    
-//                            if (stDev < .4) {
-//                                c += 'low';
-//                            } else if (childCount < 1) {
-//                                c += 'medium';
-//                            } else {
-//                                c += 'high';
-//                            }
-                    
-                    
-//                        return new L.DivIcon({ html: '<div><span>' + childCount + stDev '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40)})
-//                    }
+                    // polygonOptions:{color: "#fff" - stroke color
+//                          opacity: 
+//                            fillColor/fillOpacity
+//                            className}, 
+                    iconCreateFunction: function(cluster) {
+                        var hue = stDev * 33;
+                        var sat = 50;
+                        var hslaFinal = "hsla("+hue+", " +sat+"%, " +"100%, " +"1.0)";
+                        var childCount = 10;
+                        var stDev = 10;
+                        return new L.DivIcon({ 
+                            html: '<div><span>'+ childCount +','+ stDev + '</span></div>',
+                            css: 'background-color: '+hslaFinal,
+                            className: 'marker-cluster',
+                            iconSize: new L.Point(40, 40)
+                        })
+                    }
                 });
                 
                     // Highlight in DataTable when Mouse Hovers over a Marker
@@ -99,12 +99,12 @@
                         var row = document.getElementById(a.layer.toGeoJSON().properties.name);
                         console.log(a.layer.toGeoJSON().properties.name);
                             row.className = "active";
-                    })
+                    });
                             
                     markers.on('mouseout', function (a) {
                         var row = document.getElementById(a.layer.toGeoJSON().properties.name);
                             row.className = " ";
-                    })        
+                    });        
                     
                     // Populate mapDataTable when a Marker is Clicked
                     markers.on('click', function (a) {
@@ -118,7 +118,6 @@
                         $("#mapDataTable").append('<tr id="'+clickedName+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                         
                     });
-                
                 
                     // Define Behaviors when Mouse Hovers over a Cluster
                     markers.on('clustermouseover', function (a) {
@@ -200,7 +199,7 @@
                         });
                 
                 
-                        //Populate mapDataTable when Cluster is Clicked
+                        // Populate mapDataTable when Cluster is Clicked
                         markers.on('clusterclick', function (a) {
                            
                         //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
@@ -223,28 +222,8 @@
                 });
                 map.addLayer(markers);
             });
+
             
-            /*featureLayer.on('ready', function(layer) {
-                map.fitBounds(featureLayer.getBounds());
-                
-                var markers = new L.MarkerClusterGroup( {
-                    maxClusterRadius: 30,
-//                    polygonOptions: {
-//                        color: "#fff" - stroke color
-//                          opacity: 
-//                            fillColor/fillOpacity
-//                            className
-//                    },
-//                    iconCreateFunction: 
-//                        function (cluster) {
-//                            return new L.DivIcon({
-//                                className: 'prism',
-//                                html: cluster.getChildCount(),
-//                                iconSize: [16, 16]
-//                            });
-//                        }
-                });
-            */
         </script>
     </body>
 
