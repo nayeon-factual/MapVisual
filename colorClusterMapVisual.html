@@ -42,27 +42,27 @@
         </div>
         <div id = "messages">
             <table id = "msgTable" class = "table table-striped table-condensed">
-                    <tr>
-                        <th> img </th>
-                        <th> Message </th>
-                    </tr>
-                </table>
+                <tr>
+                    <th> img </th>
+                    <th> Message </th>
+                </tr>
+            </table>
         </div>
 
+        
         <script>
             //LOAD MAP
             var map = L.mapbox.map('map', 'nayeon-factual.ik2lag96')
                 .setView([38, -102.0], 9);
-            
             //LOAD POINTS
             var featureLayer = L.mapbox.featureLayer()
                 .loadURL('map.geojson')
             
+            
             featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
                 
-                 // Initially populate mapDataTable with first 100 data points
-                // ***TODO*** set behavior for when there is initially < 100 data points
+                // Initially populate mapDataTable with first 100 data points
                 // featureLayer._geojson returns entire featureCollection, iterate through. 
                 var featCol = featureLayer._geojson;
                 for (i = 0; i < 100; i++) {
@@ -72,42 +72,97 @@
                     var lng = featCol.features[i].geometry.coordinates[1];
                     $("#mapDataTable").append("<tr><td>" + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
                 }
-                                
+                
                 var markers = new L.MarkerClusterGroup({
                     maxClusterRadius: 40,
-                    // polygonOptions:{color: "#fff" - stroke color
-//                          opacity: 
-//                            fillColor/fillOpacity
-//                            className}, 
                     iconCreateFunction: function(cluster) {
+                        var childCount = cluster.getChildCount();
+                        var stDev = getStDev(cluster);
                         var hue = stDev * 33;
-                        var sat = 50;
-                        var hslaFinal = "hsla("+hue+", " +sat+"%, " +"100%, " +"1.0)";
-                        var childCount = 10;
-                        var stDev = 10;
+                        var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
+                        var sat = 100;
+                        
                         return new L.DivIcon({ 
-                            html: '<div><span>'+ childCount +','+ stDev + '</span></div>',
-                            css: 'background-color: '+hslaFinal,
+                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev + '</span></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                         })
                     }
                 });
                 
+                function getStDev(clusterObj) {
+                
+                var markerObject = clusterObj.toGeoJSON();
+                
+                //Cluster Boundary Polygon Object
+                var boundPolygon = L.polygon(clusterObj.getConvexHull());
+                //Area of Cluster Boundary in km^2
+                var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
+                var clusterDensity = boundArea/clusterObj.getChildCount();
+                // All child markers of the cluster
+                var clusterMarkers = clusterObj.getAllChildMarkers();
+                // Calculating LatLng of the Centroid of the Cluster
+                var latXTotal = 0;
+                var latYTotal = 0;
+                var lonDegreesTotal = 0;
+                var currentLatLng;
+
+                for (d = 0; d < clusterMarkers.length; d++) {
+                    currentLatLng = clusterMarkers[d]._latlng;
+                    var latDeg = currentLatLng.lat;
+                    var lonDeg = currentLatLng.lng;
+                    var latRad = Math.PI * latDeg / 180;
+
+                    latXTotal += Math.cos(latRad);
+                    latYTotal += Math.sin(latRad);
+                    lonDegreesTotal += lonDeg;
+                }
+                var centrLatRad = Math.atan2(latYTotal, latXTotal);
+                //Centroid Coordinates: (centrLatDeg, centrLonDeg)
+                var centrLatDeg = centrLatRad * 180 / Math.PI;
+                var centrLonDeg = lonDegreesTotal / clusterMarkers.length;
+
+                // Calculating Standard of Deviation for all Markers in Cluster
+                // Compare and average distances between all points and centroid
+                var R = 6371; //earth's radius approx.
+                var centrLonRad = Math.PI * centrLonDeg / 180;
+                var distSum = 0;
+
+                for (s = 0; s < clusterMarkers.length; s++) {
+                    // Use Haversine Formula for Distance Between All Markers and Centroid
+                    var otherLat = clusterMarkers[s]._latlng.lat;
+                    var otherLon = clusterMarkers[s]._latlng.lng;
+                    var deltaLat = Math.PI * (otherLat - centrLatDeg) / 180; //deltaLat in Rad
+                    var deltaLng = Math.PI * (otherLon - centrLonDeg) / 180; //deltaLng in Rad
+
+                    var step1 = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
+                        Math.cos(centrLatRad) * Math.cos(Math.PI *  otherLat/180) 
+                        * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+                    var step2 = 2*Math.atan2(Math.sqrt(step1), Math.sqrt(1-step1));
+
+                    var dist = R * step2
+                    distSum += dist;
+                    }
+
+                return distSum / clusterMarkers.length;
+                
+
+                // Popup Displays boundArea, clusterDensity, stDev upon hover
+                a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker <br /> standard of Dev: ' + stDev);
+                a.layer.openPopup();
+            };
+                    
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
-                        var row = document.getElementById(a.layer.toGeoJSON().properties.name);
-                        console.log(a.layer.toGeoJSON().properties.name);
+                            row = document.getElementById(a.layer.toGeoJSON().properties.name);
                             row.className = "active";
-                    });
-                            
-                    markers.on('mouseout', function (a) {
-                        var row = document.getElementById(a.layer.toGeoJSON().properties.name);
+                    })
+                            .on('mouseout', function (a) {
                             row.className = " ";
                     });        
                     
-                    // Populate mapDataTable when a Marker is Clicked
-                    markers.on('click', function (a) {
+                    
+                    function populate(a) {
                         //a.layer is [object object] = represents marker
                         var markerObject = a.layer.toGeoJSON();
                         var clickedName = markerObject.properties.name;
@@ -116,92 +171,35 @@
                         var clickedLng = markerObject.geometry.coordinates[1];
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
                         $("#mapDataTable").append('<tr id="'+clickedName+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
-                        
-                    });
+                    };
+                   
+                    // Populate mapDataTable when a Marker is Clicked
+                    markers.on('click', populate);
                 
-                    // Define Behaviors when Mouse Hovers over a Cluster
-                    markers.on('clustermouseover', function (a) {
-                        var markerObject = a.layer.toGeoJSON();
-                        
-                        //Cluster Boundary Polygon Object
-                        var boundPolygon = L.polygon(a.layer.getConvexHull());
-                        //Area of Cluster Boundary in km^2
-                        var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
-                        var clusterDensity = boundArea/a.layer.getChildCount();
-                        // All child markers of the cluster
-                        var clusterMarkers = a.layer.getAllChildMarkers();
-                        // Calculating LatLng of the Centroid of the Cluster
-                        var latXTotal = 0;
-                        var latYTotal = 0;
-                        var lonDegreesTotal = 0;
-                        var currentLatLng;
-                        
-                        for (c = 0; c < clusterMarkers.length; c++) {
-                            currentLatLng = clusterMarkers[c]._latlng;
-                            var latDeg = currentLatLng.lat;
-                            var lonDeg = currentLatLng.lng;
-                            var latRad = Math.PI * latDeg / 180;
-                            
-                            latXTotal += Math.cos(latRad);
-                            latYTotal += Math.sin(latRad);
-                            lonDegreesTotal += lonDeg;
-                        }
-                        
-                        var centrLatRad = Math.atan2(latYTotal, latXTotal);
-                        //Centroid Coordinates: (centrLatDeg, centrLonDeg)
-                        var centrLatDeg = centrLatRad * 180 / Math.PI;
-                        var centrLonDeg = lonDegreesTotal / clusterMarkers.length;
-                        
-                        // Calculating Standard of Deviation for all Markers in Cluster
-                        // Compare and average distances between all points and centroid
-                        var R = 6371; //earth's radius approx.
-                        var centrLonRad = Math.PI * centrLonDeg / 180;
-                        var distSum = 0;
-                        
-                        for (s = 0; s < clusterMarkers.length; s++) {
-                            
-                            // Use Haversine Formula for Distance Between All Markers and Centroid
-                            var otherLat = clusterMarkers[s]._latlng.lat;
-                            var otherLon = clusterMarkers[s]._latlng.lng;
-                            var deltaLat = Math.PI * (otherLat - centrLatDeg) / 180; //deltaLat in Rad
-                            var deltaLng = Math.PI * (otherLon - centrLonDeg) / 180; //deltaLng in Rad
-
-                            var step1 = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
-                                Math.cos(centrLatRad) * Math.cos(Math.PI *  otherLat/180) 
-                                * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
-                            var step2 = 2*Math.atan2(Math.sqrt(step1), Math.sqrt(1-step1));
-
-                            var dist = R * step2
-                            distSum += dist;
+                    
+                     // Define Behaviors when Mouse Hovers over a Cluster
+                     markers.on('clustermouseover', function(a){
+                                getStDev(a.layer);
+                            })
+                            .on('clustermouseover', function(a){
+                            // Highlight in DataTable when Mouse Hovers over a Cluster
+                            for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+                                var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
+                                var row = document.getElementById(clusterName);
+                                row.className = "active";
                             }
-                        
-                        var stDev = distSum / clusterMarkers.length;
-                        
-                        // Popup Displays boundArea, clusterDensity, stDev upon hover
-                        a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker <br /> standard of Dev: ' + stDev);
-                        a.layer.openPopup();
-                        
-                        // Highlight in DataTable when Mouse Hovers over a Cluster
-                        for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                            var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
-                            console.log(clusterName);
-                            var row = document.getElementById(clusterName);
-                            row.className = "active";
-                        }
-                        
-                        });
-                        markers.on('clustermouseout', function (a) {
+                            })
+                            .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
                             var row = document.getElementById(clusterName);
                             row.className = " ";
-                        }
+                            }
                         });
                 
                 
                         // Populate mapDataTable when Cluster is Clicked
                         markers.on('clusterclick', function (a) {
-                           
                         //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
                         //console.log('cluster ' + a.layer.getAllChildMarkers().length);
                         // ** TODO ** only populate table with top 100 if childCount > 100 
