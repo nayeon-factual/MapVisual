@@ -71,7 +71,7 @@ body { margin:0; padding:0; background-color: grey; }
 .marker-cluster {
 	background-clip: padding-box;
 	border-radius: 20px;
-    background-color: hsla(100,30%, 50%, 1);
+/*    background-color: hsla(50,30%, 50%, .5);*/
 	}
 
 .marker-cluster div {
@@ -83,7 +83,7 @@ body { margin:0; padding:0; background-color: grey; }
 	text-align: center;
 	border-radius: 15px;
 	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    background-color: hsla(98, 59%, 51%, 0.6);
+/*    background-color: hsla(98, 59%, 51%, 0.6);*/
 	}
 
 .marker-cluster span {

@@ -69,7 +69,8 @@
                     var loc = featCol.features[i].properties.locality;
                     var lat = featCol.features[i].geometry.coordinates[0];
                     var lng = featCol.features[i].geometry.coordinates[1];
-                    $("#mapDataTable").append("<tr><td>" + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
+                    var f_id = featCol.features[i].properties.factual_id;
+                    $("#mapDataTable").append('<tr id="'+f_id+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
                 }
                 
                 var markers = new L.MarkerClusterGroup({
@@ -77,14 +78,14 @@
                     iconCreateFunction: function(cluster) {
                         var childCount = cluster.getChildCount();
                         var stDev = getStDev(cluster);
-                        var hue = stDev * 33;
+                        var scale = 100/3;
+                        var hue = stDev * scale +30;
                         var sat = 100;
                         var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
-                        console.log(hslaFinal);
-                        
-                        
-                        return new L.DivIcon({ 
-                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev + '</span></div>',
+                        $(".marker-cluster").css("background-color", "#fff");
+                        //$(".marker-cluster div").css("background-color", "#fff");
+                        return new L.DivIcon({
+                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                         })
@@ -146,65 +147,68 @@
                     // return stDev
                     return distSum / clusterMarkers.length;
                 };
+                
+                // populate mapDataTable with name and properties
+                function populate(a) {
+                    //a.layer is [object object] = represents marker
+                    var markerObject = a.layer.toGeoJSON();
+                    console.log(markerObject);
+                    var clickedName = markerObject.properties.name;
+                    var clickedLoc = markerObject.properties.locality;
+                    var clickedLat = markerObject.geometry.coordinates[0];
+                    var clickedLng = markerObject.geometry.coordinates[1];
+                    var clickedID = markerObject.properties.factual_id;
+                    $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
+                    $("#mapDataTable").append('<tr id="'+clickedID+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                };
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
-                            row = document.getElementById(a.layer.toGeoJSON().properties.name);
+                            row = document.getElementById(a.layer.toGeoJSON().properties.factual_id);
                             row.className = "active";
                     })
                             .on('mouseout', function (a) {
                             row.className = " ";
                     });        
-                    
-                    
-                    function populate(a) {
-                        //a.layer is [object object] = represents marker
-                        var markerObject = a.layer.toGeoJSON();
-                        var clickedName = markerObject.properties.name;
-                        var clickedLoc = markerObject.properties.locality;
-                        var clickedLat = markerObject.geometry.coordinates[0];
-                        var clickedLng = markerObject.geometry.coordinates[1];
-                        $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
-                        $("#mapDataTable").append('<tr id="'+clickedName+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
-                    };
                    
                     // Populate mapDataTable when a Marker is Clicked
                     markers.on('click', populate);
                 
-                    
                      // Define Behaviors when Mouse Hovers over a Cluster
                      markers.on('clustermouseover', function(a){
                                 getStDev(a.layer);
                             })
                             .on('clustermouseover', function(a){
                             // Highlight in DataTable when Mouse Hovers over a Cluster
-                            for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                                var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
-                                var row = document.getElementById(clusterName);
-                                row.className = "active";
-                            }
+                                for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+                                    var clusterID = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.factual_id;
+                                    var row = document.getElementById(clusterID);
+                                    row.className = "active";
+                                }
                             })
                             .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                            var clusterName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
-                            var row = document.getElementById(clusterName);
-                            row.className = " ";
+                                var clusterID = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.factual_id;
+                                var row = document.getElementById(clusterID);
+                                row.className = " ";
                             }
                         });
                 
-                
                         // Populate mapDataTable when Cluster is Clicked
-                        markers.on('clusterclick', function (a) {
+                    markers.on('clusterclick', function (a) {
                         //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
-                        //console.log('cluster ' + a.layer.getAllChildMarkers().length);
-                        // ** TODO ** only populate table with top 100 if childCount > 100 
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
+//                        var rows = document.getElementsByTagName("tr");
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var clusterClickName = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.name;
                             var clusterClickLoc = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.locality;
                             var clusterClickLat = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0];
                             var clusterClickLng = a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1];
-                            $("#mapDataTable").append('<tr id="'+clusterClickName+'"><td>'+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
+                            var clusterClickID = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.factual_id;
+//                            for (j = 0; j < rows.length; j++) {
+//                                if ( )
+//                            }
+                            $("#mapDataTable").append('<tr id="'+clusterClickID+'"><td>'+clusterClickName+"</td>"+"<td>"+clusterClickLoc+"</td>"+"<td>"+clusterClickLat+"</td>"+"<td>"+ clusterClickLng+"</td></tr>");
                         }
                     });
                 
@@ -216,7 +220,6 @@
                 map.addLayer(markers);
             });
 
-            
         </script>
     </body>
 
