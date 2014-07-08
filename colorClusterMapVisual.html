@@ -58,7 +58,6 @@
             var featureLayer = L.mapbox.featureLayer()
                 .loadURL('map.geojson')
             
-            
             featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
                 
@@ -79,8 +78,10 @@
                         var childCount = cluster.getChildCount();
                         var stDev = getStDev(cluster);
                         var hue = stDev * 33;
-                        var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
                         var sat = 100;
+                        var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
+                        console.log(hslaFinal);
+                        
                         
                         return new L.DivIcon({ 
                             html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev + '</span></div>',
@@ -90,67 +91,61 @@
                     }
                 });
                 
+                // generate standard of deviation give cluster [object Object]
                 function getStDev(clusterObj) {
-                
-                var markerObject = clusterObj.toGeoJSON();
-                
-                //Cluster Boundary Polygon Object
-                var boundPolygon = L.polygon(clusterObj.getConvexHull());
-                //Area of Cluster Boundary in km^2
-                var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
-                var clusterDensity = boundArea/clusterObj.getChildCount();
-                // All child markers of the cluster
-                var clusterMarkers = clusterObj.getAllChildMarkers();
-                // Calculating LatLng of the Centroid of the Cluster
-                var latXTotal = 0;
-                var latYTotal = 0;
-                var lonDegreesTotal = 0;
-                var currentLatLng;
+                    var markerObject = clusterObj.toGeoJSON();
+                    // Cluster Boundary Polygon Object
+                    var boundPolygon = L.polygon(clusterObj.getConvexHull());
+                    // Area of Cluster Boundary in km^2
+                    var boundArea = (LGeo.area(boundPolygon) / 1000000).toFixed(2);
+                    var clusterDensity = boundArea/clusterObj.getChildCount();
+                    // All child markers of the cluster
+                    var clusterMarkers = clusterObj.getAllChildMarkers();
+                    // Calculating LatLng of the Centroid of the Cluster
+                    var latXTotal = 0;
+                    var latYTotal = 0;
+                    var lonDegreesTotal = 0;
+                    var currentLatLng;
 
-                for (d = 0; d < clusterMarkers.length; d++) {
-                    currentLatLng = clusterMarkers[d]._latlng;
-                    var latDeg = currentLatLng.lat;
-                    var lonDeg = currentLatLng.lng;
-                    var latRad = Math.PI * latDeg / 180;
+                    for (d = 0; d < clusterMarkers.length; d++) {
+                        currentLatLng = clusterMarkers[d]._latlng;
+                        var latDeg = currentLatLng.lat;
+                        var lonDeg = currentLatLng.lng;
+                        var latRad = Math.PI * latDeg / 180;
 
-                    latXTotal += Math.cos(latRad);
-                    latYTotal += Math.sin(latRad);
-                    lonDegreesTotal += lonDeg;
-                }
-                var centrLatRad = Math.atan2(latYTotal, latXTotal);
-                //Centroid Coordinates: (centrLatDeg, centrLonDeg)
-                var centrLatDeg = centrLatRad * 180 / Math.PI;
-                var centrLonDeg = lonDegreesTotal / clusterMarkers.length;
-
-                // Calculating Standard of Deviation for all Markers in Cluster
-                // Compare and average distances between all points and centroid
-                var R = 6371; //earth's radius approx.
-                var centrLonRad = Math.PI * centrLonDeg / 180;
-                var distSum = 0;
-
-                for (s = 0; s < clusterMarkers.length; s++) {
-                    // Use Haversine Formula for Distance Between All Markers and Centroid
-                    var otherLat = clusterMarkers[s]._latlng.lat;
-                    var otherLon = clusterMarkers[s]._latlng.lng;
-                    var deltaLat = Math.PI * (otherLat - centrLatDeg) / 180; //deltaLat in Rad
-                    var deltaLng = Math.PI * (otherLon - centrLonDeg) / 180; //deltaLng in Rad
-
-                    var step1 = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
-                        Math.cos(centrLatRad) * Math.cos(Math.PI *  otherLat/180) 
-                        * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
-                    var step2 = 2*Math.atan2(Math.sqrt(step1), Math.sqrt(1-step1));
-
-                    var dist = R * step2
-                    distSum += dist;
+                        latXTotal += Math.cos(latRad);
+                        latYTotal += Math.sin(latRad);
+                        lonDegreesTotal += lonDeg;
                     }
+                    var centrLatRad = Math.atan2(latYTotal, latXTotal);
+                    // get Centroid Coordinates: (centrLatDeg, centrLonDeg)
+                    var centrLatDeg = centrLatRad * 180 / Math.PI;
+                    var centrLonDeg = lonDegreesTotal / clusterMarkers.length;
 
-                return distSum / clusterMarkers.length;
-                
+                    // Calculating Standard of Deviation for all Markers in Cluster
+                    // Compare and average distances between all points and centroid
+                    var R = 6371; //earth's radius approx.
+                    var centrLonRad = Math.PI * centrLonDeg / 180;
+                    var distSum = 0;
 
-                // Popup Displays boundArea, clusterDensity, stDev upon hover
-                a.layer.bindPopup('clusterArea: ' + boundArea + ' km<sup>2</sup><br />clusterDensity: ' + clusterDensity + ' km<sup>2</sup> per marker <br /> standard of Dev: ' + stDev);
-                a.layer.openPopup();
-            };
+                    for (s = 0; s < clusterMarkers.length; s++) {
+                        // Use Haversine Formula for Distance Between All Markers and Centroid
+                        var otherLat = clusterMarkers[s]._latlng.lat;
+                        var otherLon = clusterMarkers[s]._latlng.lng;
+                        var deltaLat = Math.PI * (otherLat - centrLatDeg) / 180; //deltaLat in Rad
+                        var deltaLng = Math.PI * (otherLon - centrLonDeg) / 180; //deltaLng in Rad
+
+                        var step1 = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
+                            Math.cos(centrLatRad) * Math.cos(Math.PI *  otherLat/180) 
+                            * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+                        var step2 = 2*Math.atan2(Math.sqrt(step1), Math.sqrt(1-step1));
+
+                        var dist = R * step2
+                        distSum += dist;
+                        }
+                    // return stDev
+                    return distSum / clusterMarkers.length;
+                };
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
