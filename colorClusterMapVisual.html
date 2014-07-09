@@ -50,12 +50,13 @@
 
         
         <script>
-            //LOAD MAP
+            // LOAD MAP
             var map = L.mapbox.map('map', 'nayeon-factual.ik2lag96')
                 .setView([38, -102.0], 9);
-            //LOAD POINTS
+            // LOAD POINTS
             var featureLayer = L.mapbox.featureLayer()
                 .loadURL('map.geojson')
+            
             
             featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
@@ -90,7 +91,6 @@
                     }
                 });
 
-                
                 // generate standard of deviation given cluster [object Object]
                 function getStDev(clusterObj) {
                     var markerObject = clusterObj.toGeoJSON();
@@ -112,7 +112,6 @@
                         var latDeg = currentLatLng.lat;
                         var lonDeg = currentLatLng.lng;
                         var latRad = Math.PI * latDeg / 180;
-
                         latXTotal += Math.cos(latRad);
                         latYTotal += Math.sin(latRad);
                         lonDegreesTotal += lonDeg;
@@ -162,12 +161,12 @@
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
-                        var markerID = "("+a.layer._latlng.lat+", "+a.layer._latlng.lng+")";
+                        var markerID = "("+a.layer._latlng.lng+", "+a.layer._latlng.lat+")";
                         $("#mapDataTable tr[class='"+markerID+"']").addClass("active");
-                })
-                            .on('mouseout', function (a) {
-                            var markerID = "("+a.layer._latlng.lat+", "+a.layer._latlng.lng+")";
-                            $("#mapDataTable tr[class='"+markerID+" active']").removeClass("active");
+                    })
+                           .on('mouseout', function (a) {
+                           var markerID = "("+a.layer._latlng.lng+", "+a.layer._latlng.lat+")";
+                           $("#mapDataTable tr[class='"+markerID+" active']").removeClass("active");
                     });        
                    
                     // Populate mapDataTable when a Marker is Clicked
@@ -178,10 +177,9 @@
                 
                      // Define Behaviors when Mouse Hovers over a Cluster
                      markers.on('clustermouseover', function(a){
-                                getStDev(a.layer);
-                            })
-                     
-                            .on('clustermouseover', function(a){
+                            // Return standard of deviation (call later when popup)
+                            // getStDev(a.layer);
+                            
                             // Highlight in DataTable when Mouse Hovers over a Cluster
                                 for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                                     // Each row is given an ID indicated by (lat,lng)
