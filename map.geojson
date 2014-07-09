@@ -370,7 +370,15 @@
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.439071, 34.055484]},"properties": {"name": "Manco", "locality":"Los Angeles", "factual_id": "78206986-af50-4195-94a1-9eb2333a2146"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.069625, 42.334059]},"properties": {"name": "Rebecca Smith", "locality":"Boston", "factual_id": "69021ae4-979a-4b89-bacf-e998b097ed08"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.34479, 34.068694]},"properties": {"name": "JAX Commercial Cleaners Los Angeles", "locality":"Los Angeles", "factual_id": "184ad8c4-26de-4779-81c4-7c9649163328"}},
+
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.432166, 34.004242]},"properties": {"name": "US Post Office", "locality":"Los Angeles", "factual_id": "776e6b9c-86a8-4d66-8ad7-673e7981d355"}},
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.432166, 34.004242]},"properties": {"name": "US Post Office COPY", "locality":"Los Angeles", "factual_id": "776e6b9c-86a8-4d66-8ad7-673e7981d354"}},
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.432166, 34.004242]},"properties": {"name": "US Post Office COPY", "locality":"Los Angeles", "factual_id": "776e6b9c-86a8-4d66-8ad7-673e7981d353"}},
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.432166, 34.004242]},"properties": {"name": "US Post Office COPY", "locality":"Los Angeles", "factual_id": "776e6b9c-86a8-4d66-8ad7-673e7981d352"}},
+
+
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.057295, 42.358909]},"properties": {"name": "Loren Ralph A Attorney", "locality":"Boston", "factual_id": "5c1dcd49-8256-420e-9594-3abe3f95e2ab"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.042065, 42.337528]},"properties": {"name": "Slattery Bros", "locality":"Boston", "factual_id": "87264126-cd6e-4cde-b619-9686465167e1"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.127934, 33.973565]},"properties": {"name": "Abundant Life and Adolescent Growth", "locality":"Los Angeles", "factual_id": "9ab873d9-719d-4ef9-80e6-01e125670fd8"}},

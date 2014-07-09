@@ -69,8 +69,9 @@
                     var loc = featCol.features[i].properties.locality;
                     var lat = featCol.features[i].geometry.coordinates[0];
                     var lng = featCol.features[i].geometry.coordinates[1];
-                    var f_id = featCol.features[i].properties.factual_id;
-                    $("#mapDataTable").append('<tr id="'+f_id+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
+                    //var f_id = featCol.features[i].properties.factual_id;
+                    var coor = "("+lat+", "+lng+")";
+                    $("#mapDataTable").append('<tr id="'+coor+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
                 }
                 
                 var markers = new L.MarkerClusterGroup({
@@ -79,18 +80,17 @@
                         var childCount = cluster.getChildCount();
                         var stDev = getStDev(cluster);
                         var scale = 100/3;
-                        var hue = stDev * scale +30;
+                        var hue = stDev * scale + 25;
                         var sat = 100;
                         var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
-                        $(".marker-cluster").css("background-color", "#fff");
-                        //$(".marker-cluster div").css("background-color", "#fff");
                         return new L.DivIcon({
-                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div>',
+                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                         })
                     }
                 });
+
                 
                 // generate standard of deviation give cluster [object Object]
                 function getStDev(clusterObj) {
@@ -156,13 +156,14 @@
                     var clickedLoc = markerObject.properties.locality;
                     var clickedLat = markerObject.geometry.coordinates[0];
                     var clickedLng = markerObject.geometry.coordinates[1];
-                    var clickedID = markerObject.properties.factual_id;
-                    $("#mapDataTable").append('<tr id="'+clickedID+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                    //var clickedID = markerObject.properties.factual_id;
+                    var clickedCoor = "("+clickedLat+", "+clickedLng+")";
+                    $("#mapDataTable").append('<tr id="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                 };
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
-                            row = document.getElementById(a.layer.toGeoJSON().properties.factual_id);
+                            row = document.getElementById("("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")");
                             row.className = "active";
                     })
                             .on('mouseout', function (a) {
@@ -182,14 +183,15 @@
                             .on('clustermouseover', function(a){
                             // Highlight in DataTable when Mouse Hovers over a Cluster
                                 for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                                    var clusterID = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.factual_id;
+                                    // Each row is given an ID indicated by (lat,lng)
+                                    var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
                                     var row = document.getElementById(clusterID);
                                     row.className = "active";
                                 }
                             })
                             .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                                var clusterID = a.layer.getAllChildMarkers()[i].toGeoJSON().properties.factual_id;
+                                var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
                                 var row = document.getElementById(clusterID);
                                 row.className = " ";
                             }
@@ -202,6 +204,11 @@
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var childMarker = a.layer.getAllChildMarkers()[i];
                             populate(childMarker);
+                            // ***TODO*** if Lat and Lng are matched to another in the table, then mark the row red .danger class I think?
+                            // Assign LatLng id to each column?
+                            // Should Lat,Lng Coordinate be ID instead of factual_id? 
+                            
+                            
                         }
                     });
                 
