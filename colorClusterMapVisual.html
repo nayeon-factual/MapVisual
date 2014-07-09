@@ -43,8 +43,8 @@
         <div id = "messages">
             <table id = "msgTable" class = "table table-striped table-condensed">
                 <tr>
-                    <th> img </th>
-                    <th> Message </th>
+                    <th> Issue </th>
+                    <th> Coordinates </th>
                 </tr>
             </table>
         </div>
@@ -165,6 +165,7 @@
                     markers.on('mouseover', function (a) {
                             row = document.getElementById("("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")");
                             row.className = "active";
+                            console.log(row);
                     })
                             .on('mouseout', function (a) {
                             row.className = " ";
@@ -201,6 +202,7 @@
                     markers.on('clusterclick', function (a) {
                         //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
+                        $("#msgTable").html("<tr><th>Issue</th><th>Coordinates</th></tr>");
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var childMarker = a.layer.getAllChildMarkers()[i];
                             var markerObject = childMarker.toGeoJSON();
@@ -216,7 +218,9 @@
                             if (coorExists == false) {
                                 $("#mapDataTable").append('<tr class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                             } else {
+                                // mark red in the dataTable
                                 $("#mapDataTable").append('<tr class="'+clickedCoor+' danger"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                                $("#msgTable").append('<tr class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + clickedCoor + "</td></tr>");
                                 // *** TODO *** how to get the first duplicate element to get the danger class 
                                 //if ($("#mapDataTable tr[id='"+clickedCoor+"']").hasClass("danger") == false){$("#mapDataTable tr[id='"+clickedCoor+"']").addClass("danger");}
                                 

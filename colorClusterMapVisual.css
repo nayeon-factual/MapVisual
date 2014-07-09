@@ -41,6 +41,11 @@ body { margin:0; padding:0; background-color: grey; }
     padding: 10px;
 }
 
+.dupCoor {
+    color: red;
+    font-size: 12px;
+    }
+
 
 .marker-cluster border {
 	background-clip: padding-box;
