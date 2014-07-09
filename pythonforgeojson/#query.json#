@@ -1,0 +1,1 @@
+http://api.v3.factual.com/t/places-us?filters={"$and":[{"locality":{"$in":["sanfrancisco,boston"]}},{"name":{"$blank":false}},{"locality":{"$blank":false}},{"latitude":{"$blank":false}},{"longitude":{"$blank":false}}]}&KEY=i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh

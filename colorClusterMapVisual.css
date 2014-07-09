@@ -47,10 +47,10 @@ body { margin:0; padding:0; background-color: grey; }
     }
 
 
-.marker-cluster border {
+.marker-cluster {
 	background-clip: padding-box;
 	border-radius: 20px;
-    background-color: #FFF;
+/*    background-color: #FFF;*/
 	}
 
 .marker-cluster div {

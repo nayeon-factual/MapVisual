@@ -28,7 +28,6 @@
         <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.js'></script>
         <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
         
-        
         <div id = "map"></div>
         <div id = "dataTable">
             <table id = "mapDataTable" class = "table table-hover table-condensed">
@@ -71,7 +70,7 @@
                     var lng = featCol.features[i].geometry.coordinates[1];
                     //var f_id = featCol.features[i].properties.factual_id;
                     var coor = "("+lat+", "+lng+")";
-                    $("#mapDataTable").append('<tr id="'+coor+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
+                    $("#mapDataTable").append('<tr class="'+coor+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
                 }
                 
                 var markers = new L.MarkerClusterGroup({
@@ -92,7 +91,7 @@
                 });
 
                 
-                // generate standard of deviation give cluster [object Object]
+                // generate standard of deviation given cluster [object Object]
                 function getStDev(clusterObj) {
                     var markerObject = clusterObj.toGeoJSON();
                     // Cluster Boundary Polygon Object
@@ -158,17 +157,17 @@
                     var clickedLng = markerObject.geometry.coordinates[1];
                     //var clickedID = markerObject.properties.factual_id;
                     var clickedCoor = "("+clickedLat+", "+clickedLng+")";
-                    $("#mapDataTable").append('<tr id="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                    $("#mapDataTable").append('<tr class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                 };
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
-                            row = document.getElementById("("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")");
-                            row.className = "active";
-                            console.log(row);
-                    })
+                        var markerID = "("+a.layer._latlng.lat+", "+a.layer._latlng.lng+")";
+                        $("#mapDataTable tr[class='"+markerID+"']").addClass("active");
+                })
                             .on('mouseout', function (a) {
-                            row.className = " ";
+                            var markerID = "("+a.layer._latlng.lat+", "+a.layer._latlng.lng+")";
+                            $("#mapDataTable tr[class='"+markerID+" active']").removeClass("active");
                     });        
                    
                     // Populate mapDataTable when a Marker is Clicked
@@ -181,28 +180,28 @@
                      markers.on('clustermouseover', function(a){
                                 getStDev(a.layer);
                             })
+                     
                             .on('clustermouseover', function(a){
                             // Highlight in DataTable when Mouse Hovers over a Cluster
                                 for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                                     // Each row is given an ID indicated by (lat,lng)
                                     var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
-                                    var row = document.getElementById(clusterID);
-                                    row.className = "active";
+                                    $("#mapDataTable tr[class='"+clusterID+"']").addClass("active");
                                 }
                             })
                             .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                                 var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
-                                var row = document.getElementById(clusterID);
-                                row.className = " ";
+                                $("#mapDataTable tr[class='"+clusterID+" active']").removeClass("active");
                             }
                         });
                 
-                        // Populate mapDataTable when Cluster is Clicked
+                    // Populate mapDataTable when Cluster is Clicked
                     markers.on('clusterclick', function (a) {
                         //a.layer.getAllChildMarkers() returns an array; getAllChildMarkers().length is childcount
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
                         $("#msgTable").html("<tr><th>Issue</th><th>Coordinates</th></tr>");
+                        
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var childMarker = a.layer.getAllChildMarkers()[i];
                             var markerObject = childMarker.toGeoJSON();
@@ -220,14 +219,12 @@
                             } else {
                                 // mark red in the dataTable
                                 $("#mapDataTable").append('<tr class="'+clickedCoor+' danger"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                                // throw error msg in msgTable
                                 $("#msgTable").append('<tr class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + clickedCoor + "</td></tr>");
                                 // *** TODO *** how to get the first duplicate element to get the danger class 
                                 //if ($("#mapDataTable tr[id='"+clickedCoor+"']").hasClass("danger") == false){$("#mapDataTable tr[id='"+clickedCoor+"']").addClass("danger");}
                                 
-                            }
-                            
-                            
-                            
+                            }                            
                         }
                     });
                 
