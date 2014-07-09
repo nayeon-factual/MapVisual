@@ -203,10 +203,25 @@
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var childMarker = a.layer.getAllChildMarkers()[i];
-                            populate(childMarker);
-                            // ***TODO*** if Lat and Lng are matched to another in the table, then mark the row red .danger class I think?
-                            // Assign LatLng id to each column?
-                            // Should Lat,Lng Coordinate be ID instead of factual_id? 
+                            var markerObject = childMarker.toGeoJSON();
+                            var clickedName = markerObject.properties.name;
+                            var clickedLoc = markerObject.properties.locality;
+                            var clickedLat = markerObject.geometry.coordinates[0];
+                            var clickedLng = markerObject.geometry.coordinates[1];
+                            //var clickedID = markerObject.properties.factual_id;
+                            var clickedCoor = "("+clickedLat+", "+clickedLng+")";
+                            //check for identical Lat/Lng
+                            var coorExists = $("#mapDataTable tr").hasClass(clickedCoor);
+                            
+                            if (coorExists == false) {
+                                $("#mapDataTable").append('<tr class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                            } else {
+                                $("#mapDataTable").append('<tr class="'+clickedCoor+' danger"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                                // *** TODO *** how to get the first duplicate element to get the danger class 
+                                //if ($("#mapDataTable tr[id='"+clickedCoor+"']").hasClass("danger") == false){$("#mapDataTable tr[id='"+clickedCoor+"']").addClass("danger");}
+                                
+                            }
+                            
                             
                             
                         }

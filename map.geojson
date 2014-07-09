@@ -127,7 +127,9 @@
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.225353, 34.141482]},"properties": {"name": "Chuck E Cheese's", "locality":"Los Angeles", "factual_id": "219ba96f-13f3-4a5a-ac36-66df2a6a9457"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.034306, 42.344055]},"properties": {"name": "Brunschwig and Fils", "locality":"Boston", "factual_id": "7df678dd-6878-4e78-9f97-e2885005f50b"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.08885, 42.346929]},"properties": {"name": "Hub Realty", "locality":"Boston", "factual_id": "0697f754-5454-471f-a4ba-843f868b1b65"}},
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.38071, 34.0736]},"properties": {"name": "Theodore Khalili", "locality":"Los Angeles", "factual_id": "a0709336-3747-4971-9084-5c41c71e27d9"}},
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.064496, 42.349542]},"properties": {"name": "Newbury College", "locality":"Boston", "factual_id": "38992a97-64a2-43df-8027-d567f7dcb26e"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -71.099872, 42.345644]},"properties": {"name": "Gilbert L Brodsky", "locality":"Boston", "factual_id": "cd8d4c77-092b-4896-9bf8-5976ce662650"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[ -118.347834, 34.062183]},"properties": {"name": "Salon Le Colonial", "locality":"Los Angeles", "factual_id": "5d4419fc-362d-4f7b-bbbc-751821e22dd2"}},
