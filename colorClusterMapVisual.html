@@ -57,21 +57,27 @@
             var featureLayer = L.mapbox.featureLayer()
                 .loadURL('map.geojson')
             
-            
             featureLayer.on('ready', function(layer) {
                 map.fitBounds(featureLayer.getBounds());
+                
+                // populate mapDataTable with name and properties
+                function populate(markerObject) {
+                    //markerObject is a marker.toGeoJSON() object
+                    markerObject.name = markerObject.properties.name;
+                    markerObject.loc = markerObject.properties.locality;
+                    markerObject.lat = markerObject.geometry.coordinates[0];
+                    markerObject.lng = markerObject.geometry.coordinates[1];
+                    markerObject.id = markerObject.properties.factual_id;
+                    markerObject.coor = "("+markerObject.lat+", "+markerObject.lng+")";
+                    $("#mapDataTable").append('<tr id ="'+markerObject.id+'" class="'+markerObject.coor+'"><td>' + markerObject.name +"</td>"+"<td>"+markerObject.loc+"</td>"+"<td>"+markerObject.lat+"</td>"+"<td>"+markerObject.lng+"</td></tr>");
+                };
                 
                 // Initially populate mapDataTable with first 100 data points
                 // featureLayer._geojson returns entire featureCollection, iterate through. 
                 var featCol = featureLayer._geojson;
                 for (i = 0; i < 100; i++) {
-                    var name = featCol.features[i].properties.name;
-                    var loc = featCol.features[i].properties.locality;
-                    var lat = featCol.features[i].geometry.coordinates[0];
-                    var lng = featCol.features[i].geometry.coordinates[1];
-                    //var f_id = featCol.features[i].properties.factual_id;
-                    var coor = "("+lat+", "+lng+")";
-                    $("#mapDataTable").append('<tr class="'+coor+'"><td>' + name + "</td>" + "<td>" + loc + "</td>" + "<td>" + lat + "</td>" + "<td>" + lng + "</td></tr>");
+                    var f = featCol.features[i]
+                    populate(f);
                 }
                 
                 var markers = new L.MarkerClusterGroup({
@@ -146,18 +152,6 @@
                     return distSum / clusterMarkers.length;
                 };
                 
-                // populate mapDataTable with name and properties
-                function populate(rawObj) {
-                    //a.layer is [object object] = represents marker
-                    var markerObject = rawObj.toGeoJSON();
-                    var clickedName = markerObject.properties.name;
-                    var clickedLoc = markerObject.properties.locality;
-                    var clickedLat = markerObject.geometry.coordinates[0];
-                    var clickedLng = markerObject.geometry.coordinates[1];
-                    //var clickedID = markerObject.properties.factual_id;
-                    var clickedCoor = "("+clickedLat+", "+clickedLng+")";
-                    $("#mapDataTable").append('<tr class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
-                };
                     
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
@@ -172,7 +166,7 @@
                     // Populate mapDataTable when a Marker is Clicked
                     markers.on('click', function (a) {
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
-                        populate(a.layer)
+                        populate(a.layer.toGeoJSON())
                         });
                 
                      // Define Behaviors when Mouse Hovers over a Cluster
@@ -200,29 +194,34 @@
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
                         $("#msgTable").html("<tr><th>Issue</th><th>Coordinates</th></tr>");
                         
+                        // dupCount keeps a count of identical lat/lngs
+                        var dupCount = {};
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-                            var childMarker = a.layer.getAllChildMarkers()[i];
-                            var markerObject = childMarker.toGeoJSON();
+                            var markerObject = a.layer.getAllChildMarkers()[i].toGeoJSON();
                             var clickedName = markerObject.properties.name;
                             var clickedLoc = markerObject.properties.locality;
                             var clickedLat = markerObject.geometry.coordinates[0];
                             var clickedLng = markerObject.geometry.coordinates[1];
-                            //var clickedID = markerObject.properties.factual_id;
+                            var clickedID = markerObject.properties.factual_id;
                             var clickedCoor = "("+clickedLat+", "+clickedLng+")";
-                            //check for identical Lat/Lng
-                            var coorExists = $("#mapDataTable tr").hasClass(clickedCoor);
-                            
-                            if (coorExists == false) {
-                                $("#mapDataTable").append('<tr class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                            $("#mapDataTable").append('<tr id="'+clickedID+'"class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                            $("#mapDataTable tr").click(function(){
+                               console.log('click!');
+                               window.open("http://www.factual.com/"+$(this).attr('id'));
+                           });
+                            if (clickedCoor in dupCount) {
+                                dupCount[clickedCoor]++;
                             } else {
+                                dupCount[clickedCoor] = 1;
+                            }
+                        }
+                        for (var key in dupCount) {
+                            if (dupCount[key] > 1) {
                                 // mark red in the dataTable
-                                $("#mapDataTable").append('<tr class="'+clickedCoor+' danger"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
-                                // throw error msg in msgTable
-                                $("#msgTable").append('<tr class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + clickedCoor + "</td></tr>");
-                                // *** TODO *** how to get the first duplicate element to get the danger class 
-                                //if ($("#mapDataTable tr[id='"+clickedCoor+"']").hasClass("danger") == false){$("#mapDataTable tr[id='"+clickedCoor+"']").addClass("danger");}
-                                
-                            }                            
+                                $("#mapDataTable tr[class='"+key+"']").addClass("danger");
+//                                // throw error msg in msgTable
+                                $("#msgTable").append('<tr class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + key + "</td></tr>");
+                            } 
                         }
                     });
                 
@@ -232,7 +231,24 @@
                     //console.log('fitBounds '+markers.addLayer(marker));
                 });
                 map.addLayer(markers);
+                
+                // HI WHAT IS GOING ON HERE. HMMM.
+                // okay, opens window but why not after cluster click? 
+                // also can I access factual_id without setting it to the row id?
+               $("#mapDataTable tr").click(function(){
+                   console.log('click!');
+                   window.open("http://www.factual.com/"+$(this).attr('id'));
+               });
+                // highlight corresponding marker or cluster containing marker when hovering over row. 
+                // is it even possible to get marker object from row instance? ... and then changing the divIcon after getting the marker object? 
+                
+//               $("#mapDataTable tr").hover(
+//                   function mouseEnter(){
+//                   }, 
+//                   function mouseLeave(){
+//                   });    
             });
+            
 
         </script>
     </body>

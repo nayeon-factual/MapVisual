@@ -1,5 +1,9 @@
 { "type": "FeatureCollection","features": [
+
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.19412,34.111919]},"properties": {"name": "The Ventana", "locality":"Los Angeles", "factual_id": "c04dd7a4-8e12-479f-8da4-6ef0ad1af91d"}},
+
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.318403,34.003725]},"properties": {"name": "Inglewood Auto Repair Center", "locality":"Los Angeles", "factual_id": "d4825877-2891-4982-80d3-b2433712de19"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.243225,34.042988]},"properties": {"name": "Rene'e R. Garett", "locality":"Los Angeles", "factual_id": "97f03783-0312-481d-a099-239665a80fba"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-71.073079,42.333566]},"properties": {"name": "Eileen F Searle", "locality":"Boston", "factual_id": "fc594ea5-0944-4440-bcba-461c52428f7c"}},
