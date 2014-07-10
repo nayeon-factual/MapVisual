@@ -21,7 +21,7 @@
         <!--MapBox MarkerCluster Plugin-->
         <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
         <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet'/>
-        <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet'/>
+<!--        <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet'/>-->
         
         <!--MapBox Draw & Geodesy Plugin-->
         <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.css' rel='stylesheet' />
@@ -96,7 +96,7 @@
                         })
                     }
                 });
-
+                
                 // generate standard of deviation given cluster [object Object]
                 function getStDev(clusterObj) {
                     var markerObject = clusterObj.toGeoJSON();
@@ -152,11 +152,11 @@
                     return distSum / clusterMarkers.length;
                 };
                 
-                    
                     // Highlight in DataTable when Mouse Hovers over a Marker
                     markers.on('mouseover', function (a) {
                         var markerID = "("+a.layer._latlng.lng+", "+a.layer._latlng.lat+")";
                         $("#mapDataTable tr[class='"+markerID+"']").addClass("active");
+                        
                     })
                            .on('mouseout', function (a) {
                            var markerID = "("+a.layer._latlng.lng+", "+a.layer._latlng.lat+")";
@@ -166,13 +166,18 @@
                     // Populate mapDataTable when a Marker is Clicked
                     markers.on('click', function (a) {
                         $("#mapDataTable").html("<tr><th>Name</th><th>Locality</th><th>Latitude</th><th>Longitude</th></tr>");
-                        populate(a.layer.toGeoJSON())
+                        populate(a.layer.toGeoJSON());
+                        $("#mapDataTable tr").click(function(){
+                           window.open("http://www.factual.com/"+$(this).attr('id'));
                         });
+                    });
                 
                      // Define Behaviors when Mouse Hovers over a Cluster
                      markers.on('clustermouseover', function(a){
                             // Return standard of deviation (call later when popup)
                             // getStDev(a.layer);
+                         
+//                            $(".marker-cluster").css("background-color","#fff");
                             
                             // Highlight in DataTable when Mouse Hovers over a Cluster
                                 for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
@@ -183,6 +188,7 @@
                             })
                             .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
+//                                $(".marker-cluster").css("background-color",);
                                 var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
                                 $("#mapDataTable tr[class='"+clusterID+" active']").removeClass("active");
                             }
@@ -205,10 +211,11 @@
                             var clickedID = markerObject.properties.factual_id;
                             var clickedCoor = "("+clickedLat+", "+clickedLng+")";
                             $("#mapDataTable").append('<tr id="'+clickedID+'"class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
+                            // enable dataTable clicking
                             $("#mapDataTable tr").click(function(){
-                               console.log('click!');
                                window.open("http://www.factual.com/"+$(this).attr('id'));
                            });
+                            
                             if (clickedCoor in dupCount) {
                                 dupCount[clickedCoor]++;
                             } else {
@@ -220,9 +227,20 @@
                                 // mark red in the dataTable
                                 $("#mapDataTable tr[class='"+key+"']").addClass("danger");
 //                                // throw error msg in msgTable
-                                $("#msgTable").append('<tr class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + key + "</td></tr>");
+                                $("#msgTable").append('<tr id="'+key+'" class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + key + "</td></tr>");
+                                
                             } 
                         }
+                        // Click on Error Message to Zoom to Location of Error
+                        $("#msgTable tr").click(function(){
+//                                    $(".marker-cluster").css("background-color","#fff");
+                            var msgLat = $(this).attr('id').slice(1,-1).split(", ")[0];
+                            var msgLng = $(this).attr('id').slice(1,-1).split(", ")[1];
+
+                            var latlngObj = L.latLng([msgLng, msgLat]);
+                            map.setView(latlngObj, 18);
+
+                        });
                     });
                 
                 this.eachLayer(function(marker) {
@@ -232,13 +250,13 @@
                 });
                 map.addLayer(markers);
                 
-                // HI WHAT IS GOING ON HERE. HMMM.
-                // okay, opens window but why not after cluster click? 
-                // also can I access factual_id without setting it to the row id?
                $("#mapDataTable tr").click(function(){
-                   console.log('click!');
                    window.open("http://www.factual.com/"+$(this).attr('id'));
                });
+                
+//                $("#msgTable tr").click(function(){
+//                   map.fitBounds(L.latLngBounds(L.latLng($(this).attr('id'))));
+//               });
                 // highlight corresponding marker or cluster containing marker when hovering over row. 
                 // is it even possible to get marker object from row instance? ... and then changing the divIcon after getting the marker object? 
                 
