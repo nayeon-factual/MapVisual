@@ -90,7 +90,7 @@
                         var sat = 100;
                         var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
                         return new L.DivIcon({
-                            html: '<div style="background-color:'+hslaFinal+'; opacity: 0.75;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
+                            html: '<div style="background-color:'+hslaFinal+'; opacity: 0.80;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                         })
@@ -209,12 +209,20 @@
                             var clickedLat = markerObject.geometry.coordinates[0];
                             var clickedLng = markerObject.geometry.coordinates[1];
                             var clickedID = markerObject.properties.factual_id;
+                            var clickedDens = markerObject.properties.pop_density;
+                            var clickedPop = markerObject.properties.us_pop;
+                            var clickedEnviro = markerObject.properties.enviro;
                             var clickedCoor = "("+clickedLat+", "+clickedLng+")";
+                            
                             $("#mapDataTable").append('<tr id="'+clickedID+'"class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                             // enable dataTable clicking
                             $("#mapDataTable tr").click(function(){
                                window.open("http://www.factual.com/"+$(this).attr('id'));
                            });
+                            
+                            if(clickedPop < 100 || clickedDens < 500) {
+                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");
+                            }
                             
                             if (clickedCoor in dupCount) {
                                 dupCount[clickedCoor]++;
@@ -227,7 +235,7 @@
                                 // mark red in the dataTable
                                 $("#mapDataTable tr[class='"+key+"']").addClass("danger");
 //                                // throw error msg in msgTable
-                                $("#msgTable").append('<tr id="'+key+'" class="dupCoor"><td> Found Repeating Lat/Lngs!</td><td>' + key + "</td></tr>");
+                                $("#msgTable").append('<tr id="'+key+'" class="dupCoor"><td> Potential Error: Found Repeating Lat/Lngs!</td><td>' + key + "</td></tr>");
                                 
                             } 
                         }
