@@ -10,7 +10,7 @@ def main():
     factual = Factual(KEY, SECRET)
 
     table = factual.table('places-us')
-    lim = 5
+    lim = 10
     
     q = table.filters({"$and":[{'locality':{'$in':['los angeles', 'boston']}}, {'name': {'$blank': False}}, {'locality': {'$blank': False}}, {'latitude': {'$blank': False}}, {'longitude': {'$blank': False}},{'factual_id': {'$blank': False}}]}).limit(lim).sort('$random_133').select("name,locality,latitude,longitude,factual_id")
 
@@ -25,8 +25,12 @@ def main():
         locality = q.data()[count][u'locality']
 
         coor = '"coordinates":' + '[' + str(lng) + ',' + str(lat) +']},'
-        pop_coor = '(' + str(lng) + ', ' + str(lat) +')'
-        pop_den = dstk.coordinates2statistics(pop_coor)[0]['statistics']['population_density']['value']
+#        pop_coor = '(' + str(lat) + ', ' + str(lng) +')'
+        pop_den = dstk.coordinates2statistics((lat,lng))[0]['statistics']['population_density']['value']
+#        pop_us = dstk.coordinates2statistics(pop_coor)[0]['statistics']['us_population']['value']
+#        landCover = dstk.coordinates2statistics(pop_coor)[0]['statistics']['land_cover']['value']
+#        print pop_us
+#        print landCover
         
         typFeat = '{ "type": "Feature",'
         geo = '"geometry": {"type": "Point",' + coor
