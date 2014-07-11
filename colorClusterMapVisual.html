@@ -220,9 +220,16 @@
                                window.open("http://www.factual.com/"+$(this).attr('id'));
                            });
                             
-                            if(clickedPop < 100 || clickedDens < 500) {
-                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");
-                            }
+                            // Error 3: Potentially wrong location 
+                            // if area population < 100 or population density < 500, then alert error.
+                            // *** TODO *** find more appropriate thresholds for all condition (100 should be a "ridiculously low" threshold
+                            if (clickedPop < 100 || clickedDens < 500) {
+                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
+                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");}
+//                            } else if ((clickedPop < 300 || clickedDens < 500) && a.layer.getChildCount() > 100) {
+//                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
+//                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="extrCluster"><td> Potential Error: Possible Extreme Clustering! </td><td>' + clickedCoor + "</td></tr>");
+//                            }
                             
                             if (clickedCoor in dupCount) {
                                 dupCount[clickedCoor]++;

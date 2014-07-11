@@ -51,6 +51,11 @@ body { margin:0; padding:0; background-color: grey; }
     font-size: 12px;
     }
 
+.extrCluster {
+    color: red;
+    font-size: 12px;
+    }
+
 
 .marker-cluster {
 	background-clip: padding-box;
