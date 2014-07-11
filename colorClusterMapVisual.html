@@ -90,7 +90,7 @@
                         var sat = 100;
                         var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
                         return new L.DivIcon({
-                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
+                            html: '<div style="background-color:'+hslaFinal+'; opacity: 0.75;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                         })

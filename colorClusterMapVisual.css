@@ -67,4 +67,5 @@ body { margin:0; padding:0; background-color: grey; }
 
 .marker-cluster span {
 	line-height: 30px;
+    opacity:1;
 	}
