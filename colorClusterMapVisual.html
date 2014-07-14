@@ -31,12 +31,12 @@
         <div id = "map"></div>
         <div id = "dataTable">
             <table id = "mapDataTable" class = "table table-hover table-condensed">
-                <tr>
+                <thead>
                     <th> Name </th>
                     <th> Locality </th>
                     <th> Latitude </th>
                     <th> Longitude </th>
-                </tr>
+                </thead>
             </table>
         </div>
         <div id = "messages">
@@ -80,7 +80,7 @@
                 }
                 
                 var markers = new L.MarkerClusterGroup({
-                    maxClusterRadius: 40,
+                    maxClusterRadius: 35,
                     iconCreateFunction: function(cluster) {
                         var childCount = cluster.getChildCount();
                         var stDev = getStDev(cluster);
@@ -89,10 +89,11 @@
                         var sat = 100;
                         var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
                         return new L.DivIcon({
-                            html: '<div style="background-color:'+hslaFinal+'; opacity: 0.80;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
+                            html: '<div style="background-color:'+hslaFinal+'; opacity: 1;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
-                        })
+                    })
+                        
                     }
                 });
                 
@@ -173,8 +174,6 @@
                 
                      // Define Behaviors when Mouse Hovers over a Cluster
                      markers.on('clustermouseover', function(a){
-//                            $(".marker-cluster").css("background-color","#fff");
-                            
                             // Highlight in DataTable when Mouse Hovers over a Cluster
                                 for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                                     // Each row is given an ID indicated by (lat,lng)
@@ -184,7 +183,6 @@
                             })
                             .on('clustermouseout', function (a) {
                             for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
-//                                $(".marker-cluster").css("background-color",);
                                 var clusterID = "("+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[0]+", "+a.layer.getAllChildMarkers()[i].toGeoJSON().geometry.coordinates[1]+")";
                                 $("#mapDataTable tr[class='"+clusterID+" active']").removeClass("active");
                             }
@@ -198,6 +196,7 @@
                         
                         // dupCount keeps a count of identical lat/lngs
                         var dupCount = {};
+                        var clickedstDev = getStDev(a.layer);
                         for (i = 0; i < a.layer.getAllChildMarkers().length; i++) {
                             var markerObject = a.layer.getAllChildMarkers()[i].toGeoJSON();
                             var clickedName = markerObject.properties.name;
@@ -211,29 +210,30 @@
                             var clickedCoor = "("+clickedLat+", "+clickedLng+")";
                             var latDecLen = clickedLat.toString().split('.')[1].length;
                             var lngDecLen = clickedLng.toString().split('.')[1].length;
-                            
+                                                        
                             $("#mapDataTable").append('<tr id="'+clickedID+'"class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                             // enable dataTable clicking
-                            $("#mapDataTable tr").click(function(){
+                            $("#mapDataTable tr:not(':has(th)')").click(function(){
                                window.open("http://www.factual.com/"+$(this).attr('id'));
                            });
                             
-                            // Error 3: Potentially wrong location 
+                            // Error 4: Potentially wrong location 
                             // if area population < 100 or population density < 500, then alert error.
                             // *** TODO *** find more appropriate thresholds for all condition (100 should be a "ridiculously low" threshold
                             if (clickedPop < 100 || clickedDens < 400) {
                                 $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
                                 $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");
-                            // Error 4: Potentially Truncated Decimal Points
+                            // Error 3: Potentially Truncated Decimal Points
                             // if both lat/lng have decimal places < 3, then alert error. 
                             } else if (latDecLen < 3 && lngDecLen < 3) {
                                 $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
                                 $("#msgTable").append('<tr id="'+clickedCoor+'" class="truncatedDecimal"><td> Potential Error: Lat/Lng Truncated Decimals! </td><td>' + clickedCoor + "</td></tr>");
+                            // Error 2: Extreme Clustering
+                            // if st. of deviation in cluster is < 0.05, then alert error. 
+                            } else if ((clickedPop < 300 || clickedDens < 500) && clickedstDev < 0.05) {
+                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
+                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="extrCluster"><td> Potential Error: Possible Extreme Clustering! </td><td>' + clickedCoor + "</td></tr>");
                             }
-//                            } else if ((clickedPop < 300 || clickedDens < 500) && a.layer.getChildCount() > 100) {
-//                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
-//                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="extrCluster"><td> Potential Error: Possible Extreme Clustering! </td><td>' + clickedCoor + "</td></tr>");
-//                            }
                             
                             // Error 1: Repeating Lat/Lngs
                             // if there are multiples of the exact same lat/lng, then alert error. 
@@ -253,7 +253,7 @@
                             } 
                         }
                         // Click on Error Message to Zoom to Location of Error
-                        $("#msgTable tr").click(function(){
+                        $("#msgTable tr:not(':has(th)')").click(function(){
 //                                    $(".marker-cluster").css("background-color","#fff");
                             var msgLat = $(this).attr('id').slice(1,-1).split(", ")[0];
                             var msgLng = $(this).attr('id').slice(1,-1).split(", ")[1];
@@ -278,7 +278,7 @@
                 });
                 map.addLayer(markers);
                 
-               $("#mapDataTable tr").click(function(){
+               $("#mapDataTable tr:not(':has(th)')").click(function(){
                    window.open("http://www.factual.com/"+$(this).attr('id'));
                });
                 

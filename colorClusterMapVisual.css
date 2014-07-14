@@ -18,6 +18,8 @@ body { margin:0; padding:0; background-color: grey; }
     background-color: #fff;
     overflow: auto;
     padding: 10px 15px;
+    cursor: pointer;
+
 }
 
 #map { 
