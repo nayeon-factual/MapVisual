@@ -41,10 +41,10 @@
         </div>
         <div id = "messages">
             <table id = "msgTable" class = "table table-striped table-condensed">
-                <tr>
+                <thead>
                     <th> Issue </th>
                     <th> Coordinates </th>
-                </tr>
+                </thead>
             </table>
         </div>
 
@@ -223,7 +223,7 @@
                             // Error 3: Potentially wrong location 
                             // if area population < 100 or population density < 500, then alert error.
                             // *** TODO *** find more appropriate thresholds for all condition (100 should be a "ridiculously low" threshold
-                            if (clickedPop < 100 || clickedDens < 500) {
+                            if (clickedPop < 100 || clickedDens < 400) {
                                 $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
                                 $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");}
 //                            } else if ((clickedPop < 300 || clickedDens < 500) && a.layer.getChildCount() > 100) {
@@ -254,7 +254,14 @@
 
                             var latlngObj = L.latLng([msgLng, msgLat]);
                             map.setView(latlngObj, 18);
-
+                        });
+                
+                        // Error Message Hover
+                        $("#msgTable tr:not(':has(th)')").hover(
+                            function mouseEnter(){
+                            $(this).css("color","blue");
+                        }, function mouseLeave() {
+                            $(this).css("color","red");
                         });
                     });
                 
@@ -272,8 +279,7 @@
 //                $("#msgTable tr").click(function(){
 //                   map.fitBounds(L.latLngBounds(L.latLng($(this).attr('id'))));
 //               });
-                // highlight corresponding marker or cluster containing marker when hovering over row. 
-                // is it even possible to get marker object from row instance? ... and then changing the divIcon after getting the marker object? 
+   
                 
 //               $("#mapDataTable tr").hover(
 //                   function mouseEnter(){

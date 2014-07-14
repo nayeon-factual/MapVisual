@@ -43,16 +43,19 @@ body { margin:0; padding:0; background-color: grey; }
 
 .dupCoor {
     color: red;
+    cursor: pointer;
     font-size: 12px;
     }
 
 .badLocationCoor {
     color: red;
+    cursor: pointer;
     font-size: 12px;
     }
 
 .extrCluster {
     color: red;
+    cursor: pointer;
     font-size: 12px;
     }
 
