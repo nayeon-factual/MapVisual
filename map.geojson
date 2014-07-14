@@ -1,5 +1,11 @@
 { "type": "FeatureCollection","features": [
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.366088,34.075968]},"properties": {"name": "Daniel Weinberg Gallery", "locality":"Los Angeles", "factual_id": "43126624-99d9-4f06-9520-2728596420e8", "pop_density": "6161", "us_pop": "3568", "enviro": "Artificial surfaces and associated areas"}},
+
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[-118.36,34.07]},"properties": {"name": "TestPoint: Truncated Decimals", "locality":"Los Angeles", "factual_id": "43126624-99d9-4f06-9520-2728596420e8", "pop_density": "6161", "us_pop": "3568", "enviro": "Artificial surfaces and associated areas"}},
+{ "type": "Feature","geometry": {"type": "Point","coordinates":[-118.548938,34.019577]},"properties": {"name": "TestPoint: Marker in Ocean", "locality":"Los Angeles", "factual_id": "43126624-99d9-4f06-9520-2728596420e8", "pop_density": "20", "us_pop": "168", "enviro": "Water Bodies"}},
+
+
+
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.306905,34.061569]},"properties": {"name": "Dataxiom Software", "locality":"Los Angeles", "factual_id": "65aeddfc-799a-4cbe-b56b-ba2fcf0e04e6", "pop_density": "13063", "us_pop": "12059", "enviro": "Artificial surfaces and associated areas"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-118.440038,33.996647]},"properties": {"name": "Davis Pool Service", "locality":"Los Angeles", "factual_id": "85367066-7fb9-47bd-8668-af0c43a7315e", "pop_density": "3886", "us_pop": "5307", "enviro": "Artificial surfaces and associated areas"}},
 { "type": "Feature","geometry": {"type": "Point","coordinates":[-71.0412,42.3353]},"properties": {"name": "Spencer Funeral Home", "locality":"Boston", "factual_id": "1d1a8cf1-6739-4af2-ae18-5f535c683f3e", "pop_density": "1692", "us_pop": "3519", "enviro": "Water Bodies"}},

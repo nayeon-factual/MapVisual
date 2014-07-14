@@ -55,6 +55,12 @@ body { margin:0; padding:0; background-color: grey; }
     font-size: 12px;
     }
 
+.truncatedDecimal {
+    color: red;
+    cursor: pointer;
+    font-size: 12px;
+    }
+
 .extrCluster {
     color: red;
     cursor: pointer;
