@@ -47,7 +47,6 @@
                 </thead>
             </table>
         </div>
-
         
         <script>
             // LOAD MAP
@@ -174,9 +173,6 @@
                 
                      // Define Behaviors when Mouse Hovers over a Cluster
                      markers.on('clustermouseover', function(a){
-                            // Return standard of deviation (call later when popup)
-                            // getStDev(a.layer);
-                         
 //                            $(".marker-cluster").css("background-color","#fff");
                             
                             // Highlight in DataTable when Mouse Hovers over a Cluster
@@ -213,6 +209,8 @@
                             var clickedPop = markerObject.properties.us_pop;
                             var clickedEnviro = markerObject.properties.enviro;
                             var clickedCoor = "("+clickedLat+", "+clickedLng+")";
+                            var latDecLen = clickedLat.toString().split('.')[1].length;
+                            var lngDecLen = clickedLng.toString().split('.')[1].length;
                             
                             $("#mapDataTable").append('<tr id="'+clickedID+'"class="'+clickedCoor+'"><td>' + clickedName +"</td>"+"<td>"+clickedLoc+"</td>"+"<td>"+clickedLat+"</td>"+"<td>"+clickedLng+"</td></tr>");
                             // enable dataTable clicking
@@ -225,12 +223,20 @@
                             // *** TODO *** find more appropriate thresholds for all condition (100 should be a "ridiculously low" threshold
                             if (clickedPop < 100 || clickedDens < 400) {
                                 $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
-                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");}
+                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="badLocationCoor"><td> Potential Error: Area sparsely populated! </td><td>' + clickedCoor + "</td></tr>");
+                            // Error 4: Potentially Truncated Decimal Points
+                            // if both lat/lng have decimal places < 3, then alert error. 
+                            } else if (latDecLen < 3 && lngDecLen < 3) {
+                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
+                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="truncatedDecimal"><td> Potential Error: Lat/Lng Truncated Decimals! </td><td>' + clickedCoor + "</td></tr>");
+                            }
 //                            } else if ((clickedPop < 300 || clickedDens < 500) && a.layer.getChildCount() > 100) {
 //                                $("#mapDataTable tr[class='"+clickedCoor+"']").addClass("danger");
 //                                $("#msgTable").append('<tr id="'+clickedCoor+'" class="extrCluster"><td> Potential Error: Possible Extreme Clustering! </td><td>' + clickedCoor + "</td></tr>");
 //                            }
                             
+                            // Error 1: Repeating Lat/Lngs
+                            // if there are multiples of the exact same lat/lng, then alert error. 
                             if (clickedCoor in dupCount) {
                                 dupCount[clickedCoor]++;
                             } else {
