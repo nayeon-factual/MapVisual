@@ -85,11 +85,17 @@
                         var childCount = cluster.getChildCount();
                         var stDev = getStDev(cluster);
                         var scale = 100/3;
-                        var hue = stDev * scale + 25;
                         var sat = 100;
-                        var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, " +"1.0)";
+                        if (stDev < 0.01) {
+                            var hue = stDev * scale + 5;
+                            var opac = 1;
+                        } else {
+                            var hue = stDev * scale + 20;
+                            var opac = 0.7;
+                        }
+                        var hslaFinal = "hsla("+hue.toFixed(0)+", " +sat+"%, " +"65%, "+opac+")";
                         return new L.DivIcon({
-                            html: '<div style="background-color:'+hslaFinal+'; opacity: 1;"><span>'+ childCount +','+ stDev.toFixed(1) + '</span></div></div>',
+                            html: '<div style="background-color:'+hslaFinal+';"><span>'+ childCount +','+ stDev.toFixed(7) + '</span></div></div>',
                             className: 'marker-cluster',
                             iconSize: new L.Point(40, 40)
                     })
@@ -259,7 +265,7 @@
                             var msgLng = $(this).attr('id').slice(1,-1).split(", ")[1];
 
                             var latlngObj = L.latLng([msgLng, msgLat]);
-                            map.setView(latlngObj, 18);
+                            map.setView(latlngObj, 16);
                         });
                 
                         // Error Message Hover
@@ -286,12 +292,6 @@
 //                   map.fitBounds(L.latLngBounds(L.latLng($(this).attr('id'))));
 //               });
    
-                
-//               $("#mapDataTable tr").hover(
-//                   function mouseEnter(){
-//                   }, 
-//                   function mouseLeave(){
-//                   });    
             });
             
 
