@@ -29,6 +29,19 @@
         <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
         
         <div id = "map"></div>
+<!--
+        <div id = "select">
+            <table class = "toggleTable">
+                <tbody>
+                    <tr><td>Show Error 1</td></tr>
+                    <tr><td>Show Error 2</td></tr>
+                    <tr><td>Show Error 3</td></tr>
+                    <tr><td>Show Error 4</td></tr>
+                    <tr><td>Hide Clusters</td></tr>
+                </tbody>
+            </table>
+        </div>
+-->
         <div id = "dataTable">
             <table id = "mapDataTable" class = "table table-hover table-condensed">
                 <thead>
@@ -273,7 +286,6 @@
                                 map.addLayer(error2Circle);
 
                             }
-                            
                             // Error 1: Repeating Lat/Lngs
                             // if there are multiples of the exact same lat/lng, then alert error. 
                             if (clickedCoor in dupCount) {
@@ -328,11 +340,6 @@
                $("#mapDataTable tr:not(':has(th)')").click(function(){
                    window.open("http://www.factual.com/"+$(this).attr('id'));
                });
-                
-//                $("#msgTable tr").click(function(){
-//                   map.fitBounds(L.latLngBounds(L.latLng($(this).attr('id'))));
-//               });
-   
             });
             
 

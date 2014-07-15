@@ -90,3 +90,20 @@ body { margin:0; padding:0; background-color: grey; }
 	line-height: 30px;
     opacity:1;
 	}
+
+/*
+.toggleTable {
+    background:#3887BE;
+    position:absolute;
+    width: 100px;
+    height: 140px;
+    bottom: 32%;
+    left: 41%;
+    z-index:1;
+    border-radius:10px;
+    color: 'black';
+    font-size: 13px;
+    text-align: center;
+}
+*/
+
