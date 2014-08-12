@@ -2,19 +2,20 @@
     <head>
         <title> Color Geocode Visual </title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src='map.geojson'></script>
         <!--Mapbox-->
         <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
         <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
         <!--style sheet-->
         <link href='colorClusterMapVisual.css' rel='stylesheet' type='text/css'/>
         <!--bootstrap-->
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <!--jquery-->
-        <script src="//code.jquery.com/jquery-1.11.1.js"></script>
-        <!--Slider-->
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+         <!--Slider-->
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+        <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     </head>
     
     <body>
@@ -63,7 +64,7 @@
         
         <script>
             // LOAD MAP
-            var map = L.mapbox.map('map', 'nayeon-factual.ik2lag96')
+            var map = L.mapbox.map('map', 'nayeon-factual.ijioib62')
                 .setView([38, -102.0], 9);
             
             // LOAD POINTS
@@ -93,6 +94,7 @@
                     populate(f);
                 }
                 
+                // Initialize marker and cluster settings
                 var markers = new L.MarkerClusterGroup({
                     maxClusterRadius: 30,
                     iconCreateFunction: function(cluster) {
@@ -284,7 +286,6 @@
                                     fillOpacity: 0.1
                                 });
                                 map.addLayer(error2Circle);
-
                             }
                             // Error 1: Repeating Lat/Lngs
                             // if there are multiples of the exact same lat/lng, then alert error. 
@@ -313,10 +314,8 @@
                         
                         // Click on Error Message to Zoom to Location of Error
                         $("#msgTable tr:not(':has(th)')").click(function(){
-//                                    $(".marker-cluster").css("background-color","#fff");
                             var msgLat = $(this).attr('id').slice(1,-1).split(", ")[0];
                             var msgLng = $(this).attr('id').slice(1,-1).split(", ")[1];
-
                             var latlngObj = L.latLng([msgLng, msgLat]);
                             map.setView(latlngObj, 17);
                         });
